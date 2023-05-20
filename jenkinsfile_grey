@@ -24,11 +24,11 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 script {
-                    def imageName = 'greyabiwon/myrepository'
+                    def imageName = 'webapp'
                     def dockerfile = '''
-                        FROM nginx:latest
-                        COPY target/index1.war /usr/share/nginx/html
-                        EXPOSE 80
+                        FROM tomcat:9.0.75-jdk11-corretto-al2
+                        COPY target/index1.war /usr/share/local/tomcat/webapps
+                        EXPOSE 8080
                     '''
                     
                     writeFile file: 'Dockerfile', text: dockerfile
@@ -44,12 +44,12 @@ pipeline {
             steps {
                 script {
                     def containerName = 'sujay'
-                    def imageName = 'greyabiwon/myrepository'
+                    def imageName = 'webapp'
                     
                     sh "docker pull $imageName"
                     sh "docker stop $containerName || true"
                     sh "docker rm $containerName || true"
-                    sh "docker run -d -p 8080:80 --name $containerName $imageName"
+                    sh "docker run -d -p 8383:8080 --name $containerName $imageName"
                 }
             }
         }
