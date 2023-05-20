@@ -33,7 +33,7 @@ pipeline {
                     
                     writeFile file: 'Dockerfile', text: dockerfile
                     docker.build(imageName, '-f Dockerfile .')
-                    docker.withRegistry('https://hub.docker.com/repository/docker/greyabiwon/myrepository/general', '32b88c11-19dc-42d7-890c-05a4d8d3f1b5') {
+                    docker.withRegistry('https://hub.docker.com/r/greyabiwon/myrepository', '32b88c11-19dc-42d7-890c-05a4d8d3f1b5') {
                         docker.image(imageName).push()
                     }
                 }
