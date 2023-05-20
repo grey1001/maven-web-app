@@ -1,0 +1,57 @@
+pipeline {
+    agent {
+        label 'agent'
+    }
+    
+    tools {
+        maven 'mymaven'
+        dockerTool 'mydocker' // Name of the Docker installation configured in Jenkins
+    }
+    
+    stages {
+        stage('Build') {
+            steps {
+                sh 'mvn clean package'
+            }
+        }
+        
+        stage('Test') {
+            steps {
+                sh 'mvn test'
+            }
+        }
+        
+        stage('Build Docker Image') {
+            steps {
+                script {
+                    def imageName = 'greyabiwon/myrepository/sujay:latest'
+                    def dockerfile = '''
+                        FROM nginx:latest
+                        COPY target/mywebapp.war /usr/share/nginx/html
+                        EXPOSE 80
+                    '''
+                    
+                    writeFile file: 'Dockerfile', text: dockerfile
+                    docker.build(imageName, '-f Dockerfile .')
+                    docker.withRegistry('https://greyabiwon/myrepository', 'docker-credentials') {
+                        docker.image(imageName).push()
+                    }
+                }
+            }
+        }
+        
+        stage('Deploy to Container') {
+            steps {
+                script {
+                    def containerName = 'sujay'
+                    def imageName = 'greyabiwon/myrepository/sujay:latest'
+                    
+                    sh "docker pull $imageName"
+                    sh "docker stop $containerName || true"
+                    sh "docker rm $containerName || true"
+                    sh "docker run -d -p 8080:80 --name $containerName $imageName"
+                }
+            }
+        }
+    }
+}
