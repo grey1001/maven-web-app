@@ -17,13 +17,13 @@ COPY src ./src
 RUN mvn package -DskipTests
 
 # Use an appropriate NGINX base image
-FROM nginx:latest
+FROM tomcat:9.0.75-jdk11-corretto-al2
 
 # Copy the built application artifact from the previous stage to the NGINX container
-COPY --from=build /app/target/index1.war /usr/share/nginx/html
+COPY --from=build /app/target/index1.war /usr/share/local/webapps
 
 # Expose the default NGINX port (80)
-EXPOSE 80
+EXPOSE 8080
 
 # Start NGINX when the container starts
-CMD ["nginx", "-g", "daemon off;"]
+CMD ["catalina.sh" "run"]
