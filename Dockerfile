@@ -20,7 +20,7 @@ RUN mvn package -DskipTests
 FROM nginx:latest
 
 # Copy the built application artifact from the previous stage to the NGINX container
-COPY --from=build /app/target/maven-web-app.war /usr/share/nginx/html
+COPY --from=build /app/target/index1.war /usr/share/nginx/html
 
 # Expose the default NGINX port (80)
 EXPOSE 80
