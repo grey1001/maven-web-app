@@ -24,7 +24,7 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 script {
-                    def imageName = 'greyabiwon/myrepository/sujay:latest'
+                    def imageName = 'greyabiwon/myrepository'
                     def dockerfile = '''
                         FROM nginx:latest
                         COPY target/index1.war /usr/share/nginx/html
@@ -44,7 +44,7 @@ pipeline {
             steps {
                 script {
                     def containerName = 'sujay'
-                    def imageName = 'greyabiwon/myrepository/sujay:latest'
+                    def imageName = 'greyabiwon/myrepository'
                     
                     sh "docker pull $imageName"
                     sh "docker stop $containerName || true"
