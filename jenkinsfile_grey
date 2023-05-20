@@ -27,7 +27,7 @@ pipeline {
                     def imageName = 'greyabiwon/myrepository/sujay:latest'
                     def dockerfile = '''
                         FROM nginx:latest
-                        COPY target/maven-web-app.war /usr/share/nginx/html
+                        COPY target/index1.war /usr/share/nginx/html
                         EXPOSE 80
                     '''
                     
