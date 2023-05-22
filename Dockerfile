@@ -17,10 +17,10 @@ COPY src ./src
 RUN mvn package -DskipTests
 
 # Use an appropriate NGINX base image
-FROM tomcat:9.0.75-jdk11-corretto-al2
+FROM tomcat:latest
 
 # Copy the built application artifact from the previous stage to the NGINX container
-COPY --from=build /app/target/index1.war /usr/share/local/webapps
+COPY --from=build /app/target/mvn-hello-world.war /usr/share/local/webapps
 
 # Expose the default NGINX port (80)
 EXPOSE 8080
