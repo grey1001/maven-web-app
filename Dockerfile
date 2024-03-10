@@ -1,29 +1,29 @@
-# Use an appropriate base image that has Maven and Java installed
-FROM maven:3.8.4-openjdk-11-slim AS build
+# Use an official Maven image as a base image for building
+FROM maven:3.8.4-openjdk-8 AS builder
 
-# Set the working directory inside the container
+# Set the working directory in the container
 WORKDIR /app
 
-# Copy the pom.xml file to the container
+# Copy the POM file to download dependencies
 COPY pom.xml .
-
-# Download the dependencies specified in the pom.xml
-RUN mvn dependency:go-offline
-
-# Copy the source code to the container
+# Copy the rest of the application code
 COPY src ./src
 
-# Build the application using Maven
-RUN mvn package -DskipTests
+# Build the application
+RUN mvn install
 
-# Use an appropriate NGINX base image
-FROM tomcat:latest
+# Use an official Tomcat image as a base image for runtime
+FROM tomcat:9.0-jdk8-openjdk-slim
 
-# Copy the built application artifact from the previous stage to the NGINX container
-COPY --from=build /app/target/mvn-hello-world.war /usr/share/local/webapps
+# Remove the default Tomcat webapps
+RUN rm -rf /usr/local/tomcat/webapps/*
 
-# Expose the default NGINX port (80)
+# Copy the WAR file from the builder stage to Tomcat's webapps directory
+RUN rm -rf /usr/local/tomcat/webapps/*
+COPY --from=builder /app/target/*.war /usr/local/tomcat/webapps/ROOT.war
+
+# Expose the port that Tomcat runs on
 EXPOSE 8080
 
-# Start NGINX when the container starts
-CMD ["catalina.sh" "run"]
+# Specify the command to run on container start
+CMD ["catalina.sh", "run"]
